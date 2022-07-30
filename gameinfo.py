@@ -1,4 +1,5 @@
 import pygame
+
 class GameInfo():
     # there should only be 1 instance of this class since there is only 1
     def __init__(self, screen):

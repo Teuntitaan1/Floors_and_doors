@@ -2,7 +2,7 @@ import pygame
 
 class healthsystem():
     # initializes the component
-    def __init__(self, parent, starthealth, minhealth = 1, maxhealth = 999999 ):
+    def __init__(self, parent, starthealth, minhealth = 1, maxhealth = 999999):
         # gets the component user
         self.parent = parent
         # gets the starting healt
@@ -14,8 +14,9 @@ class healthsystem():
     # update function specific to the component
     def update(self):
         # this mess of a statement retrieves the screen class from the gameinfo class, it does so via a sort of pointer towards the gameinfo class present on the parent class
-        healthtext = self.parent.gameinfo.font.render(str(self.currenthealth), True, (255, 255 , 255))
-        self.parent.gameinfo.screen.blit(healthtext, [self.parent.x, self.parent.y - (self.parent.height / 1.5)])
+        if self.parent.hidden is False:
+            healthtext = self.parent.gameinfo.font.render(str(self.currenthealth), True, (255, 255, 255))
+            self.parent.gameinfo.screen.blit(healthtext, [self.parent.x, self.parent.y - (self.parent.height / 1.5)])
     
     # decreases the currenthealth variable of the current instance of the component
     def decreasehealth(self, howmuch):
@@ -31,17 +32,17 @@ class healthsystem():
 
 class renderingsystem():
     
-    def __init__(self, parent, sprite, color = None, hidden = False):
+    def __init__(self, parent, sprite, color = None,):
         self.parent = parent
         self.sprite = sprite
         # gets the sprite type to determine how to draw the given sprite
         self.spritetype = type(self.sprite)
-        self.hidden = hidden
         self.color = color
         
     def render(self):
+
         # draws the given sprite to the current screen at the location of the parent object
-        if not self.hidden:
+        if self.parent.hidden is False:
             if self.spritetype == pygame.Surface:
                 # draws the surface to the screen
                 self.parent.gameinfo.screen.blit(self.sprite, [self.parent.x, self.parent.y])
@@ -59,6 +60,11 @@ class renderingsystem():
                 
             else: 
                 raise Exception("Current variable type not supported by the render engine")
+    
+    # changes the sprite and spritetype        
+    def changesprite(self, towhat):
+        self.sprite = towhat
+        self.spritetype = type(towhat)        
                 
 
 

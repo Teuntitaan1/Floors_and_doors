@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         # sprite rendering system
         self.sprite = pygame.Rect((self.x, self.y), (self.width, self.height)) #pygame.image.load("PygameGame\sprites\CatSprite.jpg").convert()
         self.renderingsystem = renderingsystem(self, self.sprite, (255,255,255))
+        self.hidden = False
         # movement system
         self.movementspeed = 300
         self.movementsystem = movementsystem(self, self.movementspeed)
@@ -32,7 +33,9 @@ class Player(pygame.sprite.Sprite):
         self.renderingsystem.render()
         self.healthsystem.update()
         self.movementsystem.handlemovement()
-        # uncomment for cool animation
-        # self.healthsystem.update()
+        # debug statement to check if switch sprite was working
+        key = pygame.key.get_pressed()
+        if key[pygame.K_k]:
+            self.renderingsystem.changesprite(pygame.image.load("PygameGame\sprites\CatSprite.jpg").convert())
         
 
