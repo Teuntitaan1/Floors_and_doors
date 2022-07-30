@@ -39,3 +39,4 @@ class Player(pygame.sprite.Sprite):
             self.renderingsystem.changesprite(pygame.image.load("PygameGame\sprites\CatSprite.jpg").convert())
         
 
+# todo make all the components into a big list we can loop over in player.update(), also try to be able to dynamicly add and remove components on runtime
