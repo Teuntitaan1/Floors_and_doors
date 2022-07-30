@@ -1,9 +1,9 @@
 import pygame
 
 class GameInfo():
-    # there should only be 1 instance of this class since there is only 1
+    # there should only be 1 instance of this class since there is only 1 game
     def __init__(self, screen):
-        # general game variables that otherwise need to be passed along in different functions which i
+        # general game variables that otherwise need to be passed along in different functions which i hate
         self.font = pygame.font.SysFont("Vera", 40)
         self.frameselapsed = 0
         self.screen = screen

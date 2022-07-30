@@ -1,5 +1,6 @@
 import pygame
 from os import listdir
+
 class healthsystem():
     # initializes the component
     def __init__(self, parent, starthealth, minhealth = 1, maxhealth = 999999):
@@ -30,6 +31,7 @@ class healthsystem():
         if self.currenthealth + howmuch < self.maxhealth:
             self.currenthealth += howmuch
 
+# simple rendering system
 class renderingsystem():
     
     def __init__(self, parent, sprite, color = None,):
@@ -93,6 +95,7 @@ class movementsystem():
         elif key[pygame.K_DOWN]:
             self.parent.y += self.movementspeed * self.parent.gameinfo.deltatime
 
+# modular animation handler
 class animationsystem():
     
     def __init__(self, parent, animationsources):
