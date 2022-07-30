@@ -1,5 +1,5 @@
 import pygame
-
+from os import listdir
 class healthsystem():
     # initializes the component
     def __init__(self, parent, starthealth, minhealth = 1, maxhealth = 999999):
@@ -93,4 +93,64 @@ class movementsystem():
         elif key[pygame.K_DOWN]:
             self.parent.y += self.movementspeed * self.parent.gameinfo.deltatime
 
+class animationsystem():
+    
+    def __init__(self, parent, animationsources):
         
+        self.parent = parent
+        # empty dict that going to be containing every animation
+        self.animations = {}
+        self.isanimating = False
+        
+        # loops through every file in the animationsources directory, parses it to an image and adds it to a list corresponding to the animation name
+        for frame in listdir(animationsources):
+            try:
+                print(frame)
+                # appends the frame to the animationlist
+                frameinimage = pygame.image.load(f"{animationsources}\\{frame}").convert()
+                animationtype = frame.split("_")[0] # gets the animation name so it can class them tog
+                self.animations[animationtype].append(frameinimage)
+            
+            except Exception as e:
+                self.animations[animationtype] = []
+        
+        print(self.animations.keys())
+        
+        # updates on every animation change
+        self.currentanimation = None
+        self.currentanimationlength = None
+        self.currentanimationframe = 0
+        self.currentanimationspeed = None
+    
+    
+    # preps an animation to be played   
+    def playanimation(self, animationname, speed):
+        
+        if animationname in self.animations.keys():
+            # resets and switches the animation
+            if not self.isanimating:
+                self.isanimating = True
+                self.currentanimation = animationname
+                self.currentanimationlength = len(self.animations[animationname])
+                self.currentanimationframe = 0
+                # speed of the animation
+                self.currentanimationspeed = speed
+        else: 
+            raise Exception("This is not a valid animation name")
+    
+    
+    # must be run on every frame for the animation to play    
+    def update(self):
+        if self.isanimating:
+            
+            # checks if the next frame is valid before rendering the actual frame
+            if self.currentanimationframe > self.currentanimationlength:
+                self.isanimating = False
+            else:
+                # a rendering system needs to be present on the parent entity, this function basically renders the current frame from the current animation
+                self.parent.renderingsystem.changesprite(self.animations[self.currentanimation][int(self.currentanimationframe)])
+                # increments to the next frame
+                self.currentanimationframe += self.currentanimationspeed
+        
+        
+    

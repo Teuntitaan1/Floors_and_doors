@@ -18,6 +18,8 @@ class Player(pygame.sprite.Sprite):
         self.sprite = pygame.Rect((self.x, self.y), (self.width, self.height)) #pygame.image.load("PygameGame\sprites\CatSprite.jpg").convert()
         self.renderingsystem = renderingsystem(self, self.sprite, (255,255,255))
         self.hidden = False
+        # animator
+        self.animationsystem = animationsystem(self, "PygameGame\playeranimations")
         # movement system
         self.movementspeed = 300
         self.movementsystem = movementsystem(self, self.movementspeed)
@@ -31,12 +33,13 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         
         self.renderingsystem.render()
+        self.animationsystem.update()
         self.healthsystem.update()
         self.movementsystem.handlemovement()
         # debug statement to check if switch sprite was working
         key = pygame.key.get_pressed()
         if key[pygame.K_k]:
-            self.renderingsystem.changesprite(pygame.image.load("PygameGame\sprites\CatSprite.jpg").convert())
+            self.animationsystem.playanimation("Walk", 0.01)
         
 
 # todo make all the components into a big list we can loop over in player.update(), also try to be able to dynamicly add and remove components on runtime
