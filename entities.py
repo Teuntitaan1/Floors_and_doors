@@ -39,7 +39,9 @@ class Player(pygame.sprite.Sprite):
         # debug statement to check if switch sprite was working
         key = pygame.key.get_pressed()
         if key[pygame.K_k]:
-            self.animationsystem.playanimation("Walk", 0.01)
+            self.animationsystem.playanimation("Number", 0.02, True)
+        if key[pygame.K_l]:
+            self.animationsystem.stopanimation()
         
 
 # todo make all the components into a big list we can loop over in player.update(), also try to be able to dynamicly add and remove components on runtime

@@ -124,10 +124,15 @@ class animationsystem():
         self.currentanimationlength = None
         self.currentanimationframe = 0
         self.currentanimationspeed = None
+        self.currentanimationislooping = False
+    
+    
+    
+    #still need to fix wierd bug causing the animation to always start on frame 2
     
     
     # preps an animation to be played   
-    def playanimation(self, animationname, speed):
+    def playanimation(self, animationname, speed, looping = False):
         
         if animationname in self.animations.keys():
             # resets and switches the animation
@@ -135,25 +140,33 @@ class animationsystem():
                 self.isanimating = True
                 self.currentanimation = animationname
                 self.currentanimationlength = len(self.animations[animationname])
+                
                 self.currentanimationframe = 0
                 # speed of the animation
                 self.currentanimationspeed = speed
+                # if the animation should loop indefinitly
+                self.currentanimationislooping = looping
         else: 
             raise Exception("This is not a valid animation name")
     
+    def stopanimation(self):
+        self.isanimating = False
     
     # must be run on every frame for the animation to play    
     def update(self):
         if self.isanimating:
             
-            # checks if the next frame is valid before rendering the actual frame
+            # checks if the next frame is valid before rendering the actual frame, minus 1 because the root of currentanimationlength is a list which starts at index 0
             if self.currentanimationframe > self.currentanimationlength:
-                self.isanimating = False
+                if not self.currentanimationislooping:
+                    self.isanimating = False
+                else:
+                    self.currentanimationframe = 0
             else:
                 # a rendering system needs to be present on the parent entity, this function basically renders the current frame from the current animation
                 self.parent.renderingsystem.changesprite(self.animations[self.currentanimation][int(self.currentanimationframe)])
                 # increments to the next frame
                 self.currentanimationframe += self.currentanimationspeed
-        
+        print(self.currentanimationframe)
         
     

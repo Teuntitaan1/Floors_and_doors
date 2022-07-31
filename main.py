@@ -3,6 +3,8 @@ from entities import Player
 import pygame
 import time
 
+
+
 pygame.init()
 
 # Pygame window setup
