@@ -1,5 +1,6 @@
+from components import *
 from gameinfo import GameInfo
-from entities import Player
+from entities import entity
 import pygame
 import time
 
@@ -11,16 +12,19 @@ pygame.init()
 screen = pygame.display.set_mode((800, 800))
 refreshrate = 60
 clock = pygame.time.Clock()
-pygame.display.set_caption("Floors and doors")
+pygame.display.set_caption("Starlit")
 
 # gameinfo object
 gameinfo = GameInfo(screen)
 # game objects
-player = Player(gameinfo, 50, 50)
+player = entity(gameinfo, 100, 100, 50, 50)
+player.addcomponent(renderingsystem(player, pygame.Rect((player.x, player.y), (player.width, player.height)), (255,255,255)), "renderingsystem")
+player.addcomponent(movementsystem(player, 300), "movementsystem")
+player.addcomponent(physicssystem(player, 1), "physicssytem")
+
 # game variables
 Running = True
 Lastframe = time.time()
-
 # main loop
 while Running:
 
@@ -39,10 +43,10 @@ while Running:
         # exit checker
         if event.type == pygame.QUIT:
             Running = False
-
+    
     # entity updates
     player.update()
-    
+
     # screen updates
     clock.tick(refreshrate)
     pygame.display.update()

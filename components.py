@@ -16,7 +16,7 @@ class healthsystem():
     def update(self):
         # this mess of a statement retrieves the screen class from the gameinfo class, it does so via a sort of pointer towards the gameinfo class present on the parent class
         if self.parent.hidden is False:
-            healthtext = self.parent.gameinfo.font.render(str(self.currenthealth), True, (255, 255, 255))
+            healthtext = self.parent.gameinfo.rendertext(str(self.currenthealth), (255, 255, 255))
             self.parent.gameinfo.screen.blit(healthtext, [self.parent.x, self.parent.y - (self.parent.height / 1.5)])
     
     # decreases the currenthealth variable of the current instance of the component
@@ -40,11 +40,13 @@ class renderingsystem():
         # gets the sprite type to determine how to draw the given sprite
         self.spritetype = type(self.sprite)
         self.color = color
+        # if it should even render
+        self.hidden = False
         
-    def render(self):
+    def update(self):
 
         # draws the given sprite to the current screen at the location of the parent object
-        if self.parent.hidden is False:
+        if self.hidden is False:
             if self.spritetype == pygame.Surface:
                 # draws the surface to the screen
                 self.parent.gameinfo.screen.blit(self.sprite, [self.parent.x, self.parent.y])
@@ -78,7 +80,7 @@ class movementsystem():
         self.parent = parent
         self.movementspeed = movementspeed
 
-    def handlemovement(self):
+    def update(self):
 
         key = pygame.key.get_pressed()
 
@@ -169,4 +171,20 @@ class animationsystem():
                 self.currentanimationframe += self.currentanimationspeed
         print(self.currentanimationframe)
         
+        
+class physicssystem():
+    
+    def __init__(self, parent, mass):
+        self.parent = parent
+        self.objectmass = mass
+        self.acceleration = 0
+        
+    def update(self):
+        self.acceleration += self.objectmass * self.parent.gameinfo.gravity * self.parent.gameinfo.deltatime  # a=m*f or a=f*m and * deltatime to make it per second not per frame
+        if self.acceleration > self.parent.gameinfo.maxaccelaration:
+            self.acceleration = self.parent.gameinfo.maxaccelaration
+        self.parent.y += self.acceleration
+        
+    def setacceleration(self, towhat):
+        self.acceleration = towhat
     

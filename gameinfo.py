@@ -9,3 +9,10 @@ class GameInfo():
         self.screen = screen
         # this gets updated a the beginning of every iteration of the main loop
         self.deltatime = None
+        # for the physics system
+        self.gravity = 9.8 # pixels per second
+        self.maxaccelaration = 100 # pixels per second 
+        
+    def rendertext(self, text, color):
+        renderedtext = self.font.render(text, True, color)
+        return renderedtext        
