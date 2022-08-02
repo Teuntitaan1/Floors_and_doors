@@ -11,8 +11,19 @@ class GameInfo():
         self.deltatime = None
         # for the physics system
         self.gravity = 9.8 # pixels per second
+        self.friction = 10
         self.maxaccelaration = 100 # pixels per second 
+        # entity shiz
+        self.entitylist = []
+        self.playerlist = []
+        self.enemylist = []
+        self.walllist = []
         
     def rendertext(self, text, color):
         renderedtext = self.font.render(text, True, color)
         return renderedtext        
+    
+    def update(self):
+        # updates every entity in the list, duh
+        for entity in self.entitylist:
+            entity.update()

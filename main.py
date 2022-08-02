@@ -1,6 +1,6 @@
 from components import *
 from gameinfo import GameInfo
-from entities import entity
+from entitytemplates import playertemplate, walltemplate
 import pygame
 import time
 
@@ -17,10 +17,16 @@ pygame.display.set_caption("Starlit")
 # gameinfo object
 gameinfo = GameInfo(screen)
 # game objects
-player = entity(gameinfo, 100, 100, 50, 50)
-player.addcomponent(renderingsystem(player, pygame.Rect((player.x, player.y), (player.width, player.height)), (255,255,255)), "renderingsystem")
-player.addcomponent(movementsystem(player, 300), "movementsystem")
-player.addcomponent(physicssystem(player, 1), "physicssytem")
+player = playertemplate(gameinfo, 100, 100, 50, 50)
+
+wall = walltemplate(gameinfo, 100, 200, 7000, 60)
+wall2 = walltemplate(gameinfo, 300, 160, 120, 200)
+
+gameinfo.entitylist.append(player)
+gameinfo.entitylist.append(wall)
+gameinfo.walllist.append(wall)
+gameinfo.entitylist.append(wall2)
+gameinfo.walllist.append(wall2)
 
 # game variables
 Running = True
@@ -45,7 +51,7 @@ while Running:
             Running = False
     
     # entity updates
-    player.update()
+    gameinfo.update()
 
     # screen updates
     clock.tick(refreshrate)

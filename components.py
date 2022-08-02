@@ -79,7 +79,8 @@ class movementsystem():
     def __init__(self, parent, movementspeed):
         self.parent = parent
         self.movementspeed = movementspeed
-
+        self.jumpforce = 10
+        self.canjump = True
     def update(self):
 
         key = pygame.key.get_pressed()
@@ -91,11 +92,10 @@ class movementsystem():
         elif key[pygame.K_RIGHT]:
             self.parent.x += self.movementspeed * self.parent.gameinfo.deltatime
 
-        elif key[pygame.K_UP]:
-            self.parent.y -= self.movementspeed * self.parent.gameinfo.deltatime
+        if key[pygame.K_UP] and self.canjump:
+            self.parent.getcomponent("physicssystem").acceleration -= self.jumpforce
+            self.canjump = False
 
-        elif key[pygame.K_DOWN]:
-            self.parent.y += self.movementspeed * self.parent.gameinfo.deltatime
 
 # modular animation handler
 class animationsystem():
@@ -166,7 +166,7 @@ class animationsystem():
                     self.currentanimationframe = 0
             else:
                 # a rendering system needs to be present on the parent entity, this function basically renders the current frame from the current animation
-                self.parent.renderingsystem.changesprite(self.animations[self.currentanimation][int(self.currentanimationframe)])
+                self.parent.getcomponent("renderingsystem").changesprite(self.animations[self.currentanimation][int(self.currentanimationframe)])
                 # increments to the next frame
                 self.currentanimationframe += self.currentanimationspeed
         print(self.currentanimationframe)
@@ -180,11 +180,87 @@ class physicssystem():
         self.acceleration = 0
         
     def update(self):
-        self.acceleration += self.objectmass * self.parent.gameinfo.gravity * self.parent.gameinfo.deltatime  # a=m*f or a=f*m and * deltatime to make it per second not per frame
+        
+        self.acceleration += self.objectmass * self.parent.gameinfo.gravity * self.parent.gameinfo.deltatime # a=m*f or a=f*m and * deltatime to make it per second not per frame
         if self.acceleration > self.parent.gameinfo.maxaccelaration:
             self.acceleration = self.parent.gameinfo.maxaccelaration
         self.parent.y += self.acceleration
         
     def setacceleration(self, towhat):
         self.acceleration = towhat
+        
+class newphysicssystem():
     
+    def __init__(self, parent, mass):
+        self.parent = parent
+        self.objectmass = mass
+        self.friction = self.parent.gameinfo.friction
+        self.xacceleration = 0
+        self.yacceleration = 0
+        
+    def update(self):
+        
+        self.yacceleration += self.objectmass * self.parent.gameinfo.gravity * self.parent.gameinfo.deltatime # a=m*f or a=f*m and * deltatime to make it per second not per frame
+        if self.acceleration > self.parent.gameinfo.maxaccelaration:
+            self.acceleration = self.parent.gameinfo.maxaccelaration
+        self.parent.y += self.acceleration
+        
+    def setacceleration(self, towhat):
+        self.acceleration = towhat
+  
+# base collider class that holds some properties for a collider box      
+class collider():
+    
+    def __init__(self, parent):
+        self.parent = parent
+        self.rect = pygame.Rect((self.parent.x, self.parent.y), (self.parent.width, self.parent.height))
+        self.solid = True
+        
+    def update(self):
+        
+        self.rect = pygame.Rect((self.parent.x, self.parent.y), (self.parent.width, self.parent.height))
+        
+# player collider logic class that handles wall and enemy collision, for this to work a collider class(see above) also needs to be present
+class collidersystem():
+    
+    def __init__(self, parent):
+        self.parent = parent
+        self.collisiontolerance = 10
+    
+    def update(self):
+        # gets the rect of its parent
+        parentrect = self.parent.getcomponent("collider").rect
+        # gets the wall list out of gameinfo
+        walllist = self.parent.gameinfo.walllist
+        
+        for wall in walllist:
+            # gets the rect of the wall
+            wallrect = wall.getcomponent("collider").rect
+            
+            if parentrect.colliderect(wallrect):
+                
+                # collision from the top
+                if abs(parentrect.bottom - wallrect.top) < self.collisiontolerance:
+                    
+                    self.parent.getcomponent("physicssystem").acceleration = 0
+                    self.parent.y = wallrect.top - self.parent.height
+                    self.parent.getcomponent("movementsystem").canjump = True 
+                    
+                # collision from the bottom
+                if abs(parentrect.top - wallrect.bottom) < self.collisiontolerance:
+                    
+                    self.parent.getcomponent("physicssystem").acceleration = 0
+                    self.parent.y = wallrect.bottom + self.parent.height 
+                    
+                # collision from the left
+                if abs(parentrect.right - wallrect.left) < self.collisiontolerance:
+                    
+                    # self.parent.getcomponent("physicssystem").acceleration = 0
+                    self.parent.x = wallrect.left - self.parent.width
+                  
+                # WHAT THE HELL IS HAPPENING HERE?  
+                # collision from the right
+                if abs(parentrect.left - wallrect.right) < self.collisiontolerance:
+                    
+                    # self.parent.getcomponent("physicssystem").acceleration = 0
+                    self.parent.x = wallrect.right + self.parent.width
